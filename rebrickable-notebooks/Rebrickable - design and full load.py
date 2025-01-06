@@ -269,18 +269,47 @@ df_date.createOrReplaceTempView("Date")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Creating the new catalog for schema.
+
+# COMMAND ----------
+
 # MAGIC %sql
-# MAGIC CREATE DATABASE Rebrickable
+# MAGIC CREATE CATALOG rebrickabledevadb
+# MAGIC MANAGED LOCATION 'abfss://cleansed@rebrickabledevadlsgen2.dfs.core.windows.net/Rebrickable/'
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC The initial idea was to save the Tables as External Tables, but this solution will not work without mounting the shared drive and I am using the Service Principal + Secret Scope authentication as part of this project, so for simplicity I have chosen to create a managed tables.
+# MAGIC Creating the new schema for external tables.
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE TABLE IF NOT EXISTS Rebrickable.Sets AS
+# MAGIC CREATE DATABASE rebrickabledevadb.Rebrickable
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Creating the external location for 'cleansed' container in Rebrickable ADLS Gen 2 to be able to create an external tables.
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC CREATE EXTERNAL LOCATION `RebrickableCleansed` URL 'abfss://cleansed@rebrickabledevadlsgen2.dfs.core.windows.net/Rebrickable/'
+# MAGIC     WITH (CREDENTIAL `rebrickabledevadbconnector`)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Creating the external tables using CTAS and temporary views, which have been created in previous steps.
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC CREATE TABLE rebrickabledevadb.Rebrickable.Sets 
+# MAGIC LOCATION 'abfss://cleansed@rebrickabledevadlsgen2.dfs.core.windows.net/Rebrickable/Sets'
+# MAGIC AS
 # MAGIC SELECT
 # MAGIC   *
 # MAGIC FROM
@@ -289,7 +318,10 @@ df_date.createOrReplaceTempView("Date")
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE TABLE IF NOT EXISTS Rebrickable.OwnedSets AS
+# MAGIC CREATE TABLE rebrickabledevadb.Rebrickable.OwnedSets 
+# MAGIC LOCATION 'abfss://cleansed@rebrickabledevadlsgen2.dfs.core.windows.net/Rebrickable/OwnedSets'
+# MAGIC AS
+# MAGIC
 # MAGIC SELECT
 # MAGIC   *
 # MAGIC from
@@ -298,7 +330,9 @@ df_date.createOrReplaceTempView("Date")
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE TABLE IF NOT EXISTS Rebrickable.Profile AS
+# MAGIC CREATE TABLE rebrickabledevadb.Rebrickable.Profile 
+# MAGIC LOCATION 'abfss://cleansed@rebrickabledevadlsgen2.dfs.core.windows.net/Rebrickable/Profile'
+# MAGIC AS
 # MAGIC SELECT
 # MAGIC   *
 # MAGIC from
@@ -307,7 +341,9 @@ df_date.createOrReplaceTempView("Date")
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE TABLE IF NOT EXISTS Rebrickable.Date AS
+# MAGIC CREATE TABLE rebrickabledevadb.Rebrickable.Date 
+# MAGIC LOCATION 'abfss://cleansed@rebrickabledevadlsgen2.dfs.core.windows.net/Rebrickable/Date'
+# MAGIC AS
 # MAGIC SELECT
 # MAGIC   *
 # MAGIC from
@@ -318,7 +354,7 @@ df_date.createOrReplaceTempView("Date")
 # MAGIC %sql
 # MAGIC --Adding necessary fields to Fact Table
 # MAGIC ALTER TABLE
-# MAGIC   Rebrickable.OwnedSets
+# MAGIC   rebrickabledevadb.Rebrickable.OwnedSets
 # MAGIC ADD
 # MAGIC   COLUMN Profile_ID LONG,
 # MAGIC   Date DATE,

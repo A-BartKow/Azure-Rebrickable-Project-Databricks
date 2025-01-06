@@ -220,14 +220,14 @@ df_date.createOrReplaceTempView("date")
 
 # MAGIC %sql
 # MAGIC --Truncating Dimension table:
-# MAGIC TRUNCATE TABLE Rebrickable.date
+# MAGIC TRUNCATE TABLE rebrickabledevadb.Rebrickable.date
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC --Loading the data to Date Dimension table:
 # MAGIC INSERT INTO
-# MAGIC Rebrickable.date
+# MAGIC rebrickabledevadb.Rebrickable.date
 # MAGIC SELECT
 # MAGIC   *
 # MAGIC from
@@ -237,14 +237,14 @@ df_date.createOrReplaceTempView("date")
 
 # MAGIC %sql
 # MAGIC --Truncating data to Sets Dimension table:
-# MAGIC TRUNCATE TABLE Rebrickable.sets
+# MAGIC TRUNCATE TABLE rebrickabledevadb.Rebrickable.sets
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC --Loading the data to Sets Dimension table:
 # MAGIC INSERT INTO
-# MAGIC   Rebrickable.sets (
+# MAGIC   rebrickabledevadb.Rebrickable.sets (
 # MAGIC     SetNumber,
 # MAGIC     SetName,
 # MAGIC     CreationYear,
@@ -267,14 +267,14 @@ df_date.createOrReplaceTempView("date")
 
 # MAGIC %sql
 # MAGIC --Truncating data to Profile dimension table:
-# MAGIC TRUNCATE TABLE Rebrickable.profile
+# MAGIC TRUNCATE TABLE rebrickabledevadb.Rebrickable.profile
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC --Loading the data to Profile dimension table:
 # MAGIC INSERT INTO
-# MAGIC   Rebrickable.profile
+# MAGIC   rebrickabledevadb.Rebrickable.profile
 # MAGIC SELECT
 # MAGIC   user_id
 # MAGIC from
@@ -289,7 +289,7 @@ df_date.createOrReplaceTempView("date")
 
 # MAGIC %sql
 # MAGIC --Inserting the newly added datasets to Fact Table Owned Sets
-# MAGIC MERGE INTO rebrickabledevdatabricks.Rebrickable.ownedsets USING owned_sets ON rebrickabledevdatabricks.Rebrickable.ownedsets.set_num = owned_sets.set_num
+# MAGIC MERGE INTO rebrickabledevadb.Rebrickable.ownedsets USING owned_sets ON rebrickabledevadb.Rebrickable.ownedsets.set_num = owned_sets.set_num
 # MAGIC WHEN NOT MATCHED THEN
 # MAGIC INSERT
 # MAGIC   (
@@ -316,11 +316,11 @@ df_date.createOrReplaceTempView("date")
 # MAGIC %sql
 # MAGIC --Adding Profile_ID in the Fact Table Owned Sets
 # MAGIC UPDATE
-# MAGIC   Rebrickable.ownedsets
+# MAGIC   rebrickabledevadb.Rebrickable.ownedsets
 # MAGIC SET
 # MAGIC   Profile_ID = (
 # MAGIC     select
 # MAGIC       user_id
 # MAGIC     from
-# MAGIC       Rebrickable.profile
+# MAGIC       rebrickabledevadb.Rebrickable.profile
 # MAGIC   )
